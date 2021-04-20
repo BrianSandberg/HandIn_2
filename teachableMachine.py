@@ -14,7 +14,7 @@ model = tensorflow.keras.models.load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 # Replace this with the path to your image
-image = Image.open('test_photo.jpg')
+image = Image.open('test_marlboro.jpg')
 
 #resize the image to a 224x224 with the same strategy as in TM2:
 #resizing the image to be at least 224x224 and then cropping from the center
@@ -33,6 +33,24 @@ normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
 # Load the image into the array
 data[0] = normalized_image_array
 
+#processedPrediction = []
 # run the inference
 prediction = model.predict(data)
+
 print(prediction)
+listTest = prediction.tolist()
+
+res_min = min (listTest, key=lambda x:int(x))
+res_max = max (listTest, key=lambda x:int(x))
+
+print(str(res_max))
+
+
+#sulul = test.split(' ')
+#print(sulul[0])
+#print(sulul[1])
+#print(sulul[2])
+
+
+
+
