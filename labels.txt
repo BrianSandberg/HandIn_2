@@ -1,4 +1,4 @@
 0 neutral
 1 coca-cola
-2 Whiskey
+2 whiskey
 3 Aperol

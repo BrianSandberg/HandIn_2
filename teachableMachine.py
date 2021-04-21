@@ -5,6 +5,7 @@ import numpy as np
 import json
 import requests
 
+
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
@@ -17,7 +18,7 @@ model = tensorflow.keras.models.load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 # Replace this with the path to your image
-image = Image.open('test_hop.jpg')
+image = Image.open('whiskey.jpg')
 
 #resize the image to a 224x224 with the same strategy as in TM2:
 #resizing the image to be at least 224x224 and then cropping from the center
@@ -49,16 +50,30 @@ listTest = (prediction*100).tolist()
 listToString = str(listTest[0])
 finalList = json.loads(listToString)
 
+fastTest = open("labels.txt", "rt")
+data = fastTest.read()
+data.replace("2", "")
+fastTest.close()
+
+
 #Prints the prediction and rounds this down to the nearst integer
 print("Prediction is ", math.floor(max(finalList)), "%")
 
 #Creates a list of every line in the desired document
 labels = open("labels.txt").readlines()
 
+string = labels[finalList.index(max(finalList))][2:-1]
+
+
+
+
 #Prints the index in the labels-list corresponding to the highest value in the finalList
-print(labels[finalList.index(max(finalList))])
+print(labels[finalList.index(max(finalList))][2:-1])
 
 
-r_temp = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=")
+
+r_temp = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=" + string))
+drinks = r_temp.json()
+print(drinks["drinks"][0]["strDrink"])
 
 
