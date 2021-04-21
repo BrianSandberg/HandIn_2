@@ -1,3 +1,4 @@
-0 Hop
-1 Marlboro
-2 Gekko
+0 neutral
+1 cola
+2 Whiskey
+3 Aperol
