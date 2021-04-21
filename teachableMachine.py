@@ -3,6 +3,7 @@ import tensorflow.keras
 from PIL import Image, ImageOps
 import numpy as np
 import json
+import requests
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
@@ -58,6 +59,6 @@ labels = open("labels.txt").readlines()
 print(labels[finalList.index(max(finalList))])
 
 
-
+r_temp = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=")
 
 
