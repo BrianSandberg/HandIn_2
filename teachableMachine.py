@@ -12,22 +12,7 @@ import cv2 as cv
 
 #chosen = False
 
-cap = cv.VideoCapture(0)
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
-while True:
-    ret, frame = cap.read()
 
-    if not ret:
-        print("Cant recieve stream")
-        break
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    cv.imshow("frame", gray)
-    if cv.waitKey(1)== ord("q"):
-        break
-cap.release()
-cv.destroyAllWindows()
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
@@ -48,8 +33,9 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 while True:
     #File selector der returner path til den valgte fil
     yas = askopenfilename(filetypes =[("jpg","*.jpg")])
+    yas2 = os.path.split(yas)[-1]
     #En lappeløsning, men fjerne hele den første del af path hen til filen
-    imageToLoad = yas[51:len(yas)]
+    imageToLoad = yas2
 
     try:
         # Replace this with the path to your image
