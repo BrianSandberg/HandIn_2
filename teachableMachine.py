@@ -29,7 +29,7 @@ fileLoader.pack(side = LEFT)
 top.mainloop()
 
 # Forces user to chose a valid .jpg file
-while i is 1:
+while True:
     # File selecter der returner path til den valgte fil
     yas = askopenfilename(filetypes=[("jpg", "*.jpg")])
     # Splits path by "/"
@@ -44,32 +44,6 @@ while i is 1:
     except:
         print("No jpg chosen")
 
-cam = cv2.VideoCapture(0)
-
-cv2.namedWindow("test")
-
-while i is -1:
-    ret, frame = cam.read()
-    if not ret:
-        print("Couldnt find frame")
-        break
-    cv2.imshow("test", frame)
-
-    k = cv2.waitKey(1)
-    if k % 256 == 27:
-        # ESC pressed
-        print("Closing...")
-        break
-    elif k % 256 == 32:
-        # SPACE pressed
-        img_name = "opencv_frame_{}.jpg".format()
-        cv2.imwrite(img_name, frame)
-        print("{} written!".format(img_name))
-        break
-
-cam.release()
-
-cv2.destroyAllWindows()
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
