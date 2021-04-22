@@ -4,7 +4,12 @@ from PIL import Image, ImageOps
 import numpy as np
 import json
 import requests
+import glob,os
+from pathlib import Path
+from tkinter import Tk, filedialog
+from tkinter.filedialog import askopenfilename
 
+#chosen = False
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
@@ -17,8 +22,26 @@ model = tensorflow.keras.models.load_model('keras_model.h5')
 # determined by the first position in the shape tuple, in this case 1.
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
-# Replace this with the path to your image
-image = Image.open('whiskey.jpg')
+#os.chdir(Path.cwd())
+#for file in glob.glob("*.jpg"):
+#    print(file)
+
+#Forces user to chose a valid .jpg file
+while True:
+    #File selector der returner path til den valgte fil
+    yas = askopenfilename(filetypes =[("jpg","*.jpg")])
+    #En lappeløsning, men fjerne hele den første del af path hen til filen
+    imageToLoad = yas[51:len(yas)]
+
+    try:
+        # Replace this with the path to your image
+        #image = Image.open('cola.jpg')
+        image = Image.open(imageToLoad)
+        break
+    except:
+        print("No jpg chosen")
+
+
 
 #resize the image to a 224x224 with the same strategy as in TM2:
 #resizing the image to be at least 224x224 and then cropping from the center
@@ -55,25 +78,34 @@ data = fastTest.read()
 data.replace("2", "")
 fastTest.close()
 
-
-#Prints the prediction and rounds this down to the nearst integer
-print("Prediction is ", math.floor(max(finalList)), "%")
-
 #Creates a list of every line in the desired document
 labels = open("labels.txt").readlines()
 
 string = labels[finalList.index(max(finalList))][2:-1]
 
-
-
-
-#Prints the index in the labels-list corresponding to the highest value in the finalList
-print(labels[finalList.index(max(finalList))][2:-1])
-
+#Prints the prediction and rounds this down to the nearst integer
+#Prints the index in the labels-list corresponding to the highest value in the finalList - Prints without the number on the label
+print("Prediction is ", math.floor(max(finalList)), "%", labels[finalList.index(max(finalList))][2:-1])
+print("\nDrinks containing this ingredient: \n")
 
 
 r_temp = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=" + string))
 drinks = r_temp.json()
 print(drinks["drinks"][0]["strDrink"])
+#print(drinks["drinks"][0]["idDrink"])
+print(drinks["drinks"][1]["strDrink"])
+print(drinks["drinks"][2]["strDrink"])
 
+print("\nIngredients in first drink: \n")
+r_temp2 = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + drinks["drinks"][0]["idDrink"]))
+drinks = r_temp2.json()
+
+for i in range(1, 16):
+    penis = drinks["drinks"][0]["strIngredient" + f'{i}']
+    if penis is None:
+        break
+    else:
+        print(penis)
+
+#Skal vi kun printe den første drink og dens ingredienser ud? Og så måske se om vi kan udvide modellen en lille smule
 
