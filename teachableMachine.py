@@ -13,8 +13,15 @@ import tkinter
 
 i = 0
 
+
 def fileLoader():
     i = 1
+
+
+
+# Disable scientific notation for clarity
+np.set_printoptions(suppress=True)
+
 
 def useCamera():
     i = -1
@@ -30,16 +37,25 @@ top.mainloop()
 
 # Forces user to chose a valid .jpg file
 while True:
+
     # File selecter der returner path til den valgte fil
     yas = askopenfilename(filetypes=[("jpg", "*.jpg")])
     # Splits path by "/"
+
+    #File selector der returner path til den valgte fil
+    yas = askopenfilename(filetypes =[("jpg","*.jpg")])
     yas2 = os.path.split(yas)[-1]
     # En lappeløsning, men fjerne hele den første del af path hen til filen
     imageToLoad = yas2
 
     try:
         # Replace this with the path to your image
+
         image = Image.open(yas2)
+
+        #image = Image.open('cola.jpg')
+        image = Image.open(imageToLoad)
+
         break
     except:
         print("No jpg chosen")
@@ -91,24 +107,28 @@ string = labels[finalList.index(max(finalList))][2:-1]
 #Prints the prediction and rounds this down to the nearst integer
 #Prints the index in the labels-list corresponding to the highest value in the finalList - Prints without the number on the label
 print("Prediction is ", math.floor(max(finalList)), "%", labels[finalList.index(max(finalList))][2:-1])
-print("\nDrinks containing this ingredient:")
+print("\nDrinks containing this ingredient: \n")
 
 
 r_temp = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=" + string))
 drinks = r_temp.json()
 print(drinks["drinks"][0]["strDrink"])
 
+#print(drinks["drinks"][0]["idDrink"])
+print(drinks["drinks"][1]["strDrink"])
+print(drinks["drinks"][2]["strDrink"])
 
-print("\nIngredients in this drink")
+
+print("\nIngredients in first drink: \n")
 r_temp2 = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + drinks["drinks"][0]["idDrink"]))
 drinks = r_temp2.json()
 
 for i in range(1, 16):
-    ingredients = drinks["drinks"][0]["strIngredient" + f'{i}']
-    if ingredients is None:
+    penis = drinks["drinks"][0]["strIngredient" + f'{i}']
+    if penis is None:
         break
     else:
-        print(ingredients)
+        print(penis)
 
 #Skal vi kun printe den første drink og dens ingredienser ud? Og så måske se om vi kan udvide modellen en lille smule
 
