@@ -8,9 +8,38 @@ import glob,os
 from pathlib import Path
 from tkinter import Tk, filedialog
 from tkinter.filedialog import askopenfilename
-import cv2 as cv
+import cv2
 
 #chosen = False
+
+cam = cv2.VideoCapture(0)
+
+cv2.namedWindow("test")
+
+img_counter = 0
+
+while True:
+    ret, frame = cam.read()
+    if not ret:
+        print("failed to grab frame")
+        break
+    cv2.imshow("test", frame)
+
+    k = cv2.waitKey(1)
+    if k%256 == 27:
+        # ESC pressed
+        print("Escape hit, closing...")
+        break
+    elif k%256 == 32:
+        # SPACE pressed
+        img_name = "opencv_frame_{}.jpg".format(img_counter)
+        cv2.imwrite(img_name, frame)
+        print("{} written!".format(img_name))
+        break
+
+cam.release()
+
+cv2.destroyAllWindows()
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
@@ -27,6 +56,8 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 #for file in glob.glob("*.jpg"):
 #    print(file)
 
+
+
 #Forces user to chose a valid .jpg file
 while True:
     #File selecter der returner path til den valgte fil
@@ -42,7 +73,7 @@ while True:
         image = Image.open(yas2)
         break
     except:
-        print("No jpg chosen")
+       print("No jpg chosen")
 
 
 
