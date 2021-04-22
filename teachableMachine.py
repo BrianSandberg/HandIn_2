@@ -11,6 +11,66 @@ from tkinter.filedialog import askopenfilename
 import cv2
 import tkinter
 
+i = 0
+
+def fileLoader():
+    i = 1
+
+def useCamera():
+    i = -1
+
+top = Tk()
+
+top.geometry("400x300")
+camera = Button(top,text = "Use camera", command = useCamera())
+camera.pack(side = RIGHT)
+fileLoader = Button(top, text ="Choose file", command = fileLoader())
+fileLoader.pack(side = LEFT)
+top.mainloop()
+
+# Forces user to chose a valid .jpg file
+while i is 1:
+    # File selecter der returner path til den valgte fil
+    yas = askopenfilename(filetypes=[("jpg", "*.jpg")])
+    # Splits path by "/"
+    yas2 = os.path.split(yas)[-1]
+    # En lappeløsning, men fjerne hele den første del af path hen til filen
+    imageToLoad = yas2
+
+    try:
+        # Replace this with the path to your image
+        image = Image.open(yas2)
+        break
+    except:
+        print("No jpg chosen")
+
+cam = cv2.VideoCapture(0)
+
+cv2.namedWindow("test")
+
+while i is -1:
+    ret, frame = cam.read()
+    if not ret:
+        print("Couldnt find frame")
+        break
+    cv2.imshow("test", frame)
+
+    k = cv2.waitKey(1)
+    if k % 256 == 27:
+        # ESC pressed
+        print("Closing...")
+        break
+    elif k % 256 == 32:
+        # SPACE pressed
+        img_name = "opencv_frame_{}.jpg".format()
+        cv2.imwrite(img_name, frame)
+        print("{} written!".format(img_name))
+        break
+
+cam.release()
+
+cv2.destroyAllWindows()
+
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
@@ -22,126 +82,32 @@ model = tensorflow.keras.models.load_model('keras_model.h5')
 # determined by the first position in the shape tuple, in this case 1.
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
-#chosen = False
+#resize the image to a 224x224 with the same strategy as in TM2:
+#resizing the image to be at least 224x224 and then cropping from the center
+size = (224, 224)
+image = ImageOps.fit(image, size, Image.ANTIALIAS)
 
+#turn the image into a numpy array
+image_array = np.asarray(image)
 
-def useCamera():
-    top.destroy()
-    cam = cv2.VideoCapture(0)
+# display the resized image
+image.show()
 
-    cv2.namedWindow("test")
+# Normalize the image
+normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
 
-    while True:
-        ret, frame = cam.read()
-        if not ret:
-            print("Couldnt find frame")
-            break
-        cv2.imshow("test", frame)
+# Load the image into the array
+data[0] = normalized_image_array
 
-        k = cv2.waitKey(1)
-        if k % 256 == 27:
-            # ESC pressed
-            print("Closing...")
-            break
-        elif k % 256 == 32:
-            # SPACE pressed
-            img_name = "opencv_frame_{}.jpg".format()
-            cv2.imwrite(img_name, frame)
-            print("{} written!".format(img_name))
-            break
-
-    image = Image.open("alcohol_0.jpg")
-    # resize the image to a 224x224 with the same strategy as in TM2:
-    # resizing the image to be at least 224x224 and then cropping from the center
-    size = (224, 224)
-    image = ImageOps.fit(image, size, Image.ANTIALIAS)
-
-    # turn the image into a numpy array
-    image_array = np.asarray(image)
-
-    # display the resized image
-    image.show()
-
-    # Normalize the image
-    normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
-
-    # Load the image into the array
-    data[0] = normalized_image_array
-    cam.release()
-
-    cv2.destroyAllWindows()
-
-def fileLoader():
-    top.destroy()
-    # Forces user to chose a valid .jpg file
-    while True:
-        # File selecter der returner path til den valgte fil
-        yas = askopenfilename(filetypes=[("jpg", "*.jpg")])
-        # Splits path by "/"
-        yas2 = os.path.split(yas)[-1]
-        # En lappeløsning, men fjerne hele den første del af path hen til filen
-        #imageToLoad = yas2
-
-        try:
-            # Replace this with the path to your image
-            # image = Image.open('cola.jpg')
-            image = Image.open(yas2)
-            break
-        except:
-            print("No jpg chosen")
-    # resize the image to a 224x224 with the same strategy as in TM2:
-    # resizing the image to be at least 224x224 and then cropping from the center
-    size = (224, 224)
-    image = ImageOps.fit(image, size, Image.ANTIALIAS)
-
-    # turn the image into a numpy array
-    image_array = np.asarray(image)
-
-    # display the resized image
-    image.show()
-
-    # Normalize the image
-    normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
-
-    # Load the image into the array
-    data[0] = normalized_image_array
-
-
-
-
-
-top = Tk()
-
-top.geometry("400x300")
-camera = Button(top,text = "Use camera", command = useCamera)
-camera.pack(side = RIGHT)
-fileLoader = Button(top, text ="Choose file", cooman = fileLoader)
-fileLoader.pack(side = LEFT)
-top.mainloop()
-
-
-
-
-
-
-
-#processedPrediction = []
 # run the inference
 prediction = model.predict(data)
 
-#print(prediction)
+
 listTest = (prediction*100).tolist()
-
-
-#print(listTest[0])
 
 listToString = str(listTest[0])
 finalList = json.loads(listToString)
 
-fastTest = open("labels.txt", "rt")
-data = fastTest.read()
-data.replace("2", "")
-fastTest.close()
 
 #Creates a list of every line in the desired document
 labels = open("labels.txt").readlines()
@@ -157,9 +123,7 @@ print("\nDrinks containing this ingredient:")
 r_temp = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=" + string))
 drinks = r_temp.json()
 print(drinks["drinks"][0]["strDrink"])
-#print(drinks["drinks"][0]["idDrink"])
-#print(drinks["drinks"][1]["strDrink"])
-#print(drinks["drinks"][2]["strDrink"])
+
 
 print("\nIngredients in this drink")
 r_temp2 = requests.get(url=("https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + drinks["drinks"][0]["idDrink"]))
@@ -173,3 +137,9 @@ for i in range(1, 16):
         print(ingredients)
 
 #Skal vi kun printe den første drink og dens ingredienser ud? Og så måske se om vi kan udvide modellen en lille smule
+
+
+
+
+
+
