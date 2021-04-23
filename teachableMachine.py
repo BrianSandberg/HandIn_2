@@ -13,7 +13,7 @@ np.set_printoptions(suppress=True)
 # Load the model - This model can be changed freely to another
 model = tensorflow.keras.models.load_model('keras_model.h5')
 
-# Create the array of the right shape to feed into the keras model
+# Create the array of the right shape to feed into the keras model.
 # The 'length' or number of images you can put into the array is
 # determined by the first position in the shape tuple, in this case 1.
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
@@ -26,7 +26,7 @@ while True:
     fileToLoad = os.path.split(file)[-1]
     # Try to save the chosen .jpg file
     try:
-        # saves the chosen image as a variable
+        # saves the chosen image as a variable.
         image = Image.open(fileToLoad)
         break
     # Doesnt break out while-loop if it cant save the image - Reopens the file choser
